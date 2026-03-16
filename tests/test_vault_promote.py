@@ -408,3 +408,68 @@ class TestMetadata:
 
         post = frontmatter.loads(adapter.read_file(result["path"]))
         assert post.metadata["promoted_from"] == ["captures/c.md"]
+
+
+# ---------------------------------------------------------------------------
+# Capture delete tests
+# ---------------------------------------------------------------------------
+
+
+def setup_capture(files: dict[str, str] | None = None):
+    """Register write tools against a MemoryAdapter and return (adapter, vault_capture)."""
+    adapter = MemoryAdapter(files)
+    mcp = McpStub()
+    register_write_tools(mcp, adapter)
+    return adapter, mcp.tools["vault_capture"]
+
+
+class TestCaptureDelete:
+    def test_delete_success(self):
+        """Delete removes the file from the adapter."""
+        cap = make_capture("To Delete", "Some text.", tags=["ai"])
+        adapter, capture = setup_capture({"captures/cap1.md": cap})
+
+        result = capture(action="delete", path="captures/cap1.md")
+
+        assert result["status"] == "deleted"
+        assert result["path"] == "captures/cap1.md"
+        assert "captures/cap1.md" not in adapter.files
+
+    def test_delete_returns_metadata(self):
+        """Delete returns the deleted capture's title and tags."""
+        cap = make_capture("My Title", "Insight.", tags=["ai", "llm"])
+        adapter, capture = setup_capture({"captures/cap1.md": cap})
+
+        result = capture(action="delete", path="captures/cap1.md")
+
+        assert result["deleted_title"] == "My Title"
+        assert sorted(result["deleted_tags"]) == ["ai", "llm"]
+
+    def test_delete_not_found(self):
+        """Error when file does not exist."""
+        adapter, capture = setup_capture()
+
+        result = capture(action="delete", path="captures/nonexistent.md")
+
+        assert result["status"] == "error"
+        assert "not found" in result["message"].lower()
+
+    def test_delete_outside_captures(self):
+        """Error when path is not under captures/."""
+        cap = make_capture("Note", "Body.")
+        adapter, capture = setup_capture({"notes/note.md": cap})
+
+        result = capture(action="delete", path="notes/note.md")
+
+        assert result["status"] == "error"
+        assert "captures/" in result["message"]
+
+    def test_unknown_action(self):
+        """Unknown action error includes both save and delete."""
+        adapter, capture = setup_capture()
+
+        result = capture(action="unknown")
+
+        assert result["status"] == "error"
+        assert "save" in result["message"]
+        assert "delete" in result["message"]

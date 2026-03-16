@@ -26,6 +26,14 @@ class StorageAdapter(ABC):
         ...
 
     @abstractmethod
+    def delete_file(self, path: str) -> dict:
+        """Delete a file. Path is relative to vault root.
+
+        Returns dict with 'path' and 'status' keys.
+        """
+        ...
+
+    @abstractmethod
     def search_files(self, query: str, directory: str = "") -> list[dict]:
         """Search for query in filenames and content (case-insensitive).
 

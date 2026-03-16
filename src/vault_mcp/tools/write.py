@@ -193,6 +193,35 @@ def _handle_capture_save(
     }
 
 
+def _handle_capture_delete(adapter: StorageAdapter, path: str) -> dict:
+    """Delete a capture file after validating it lives under captures/."""
+    if not path.startswith("captures/"):
+        return {
+            "status": "error",
+            "message": f"Can only delete files under captures/. Got: {path}",
+        }
+
+    # Read metadata before deleting so we can return it for confirmation
+    try:
+        content = adapter.read_file(path)
+        post = frontmatter.loads(content)
+        deleted_title = post.metadata.get("title", "")
+        deleted_tags = post.metadata.get("tags", [])
+        deleted_status = post.metadata.get("status", "")
+    except FileNotFoundError:
+        return {"status": "error", "message": f"File not found: {path}"}
+
+    adapter.delete_file(path)
+
+    return {
+        "status": "deleted",
+        "path": path,
+        "deleted_title": deleted_title,
+        "deleted_tags": deleted_tags,
+        "deleted_status": deleted_status,
+    }
+
+
 def _handle_promote(
     adapter: StorageAdapter,
     title_cache: dict[str, str],
@@ -325,7 +354,7 @@ def register_write_tools(mcp, adapter: StorageAdapter) -> None:
     VALID_SOURCE_TYPES = {"conversation", "article", "flash"}
 
     @mcp.tool(
-        annotations={"destructiveHint": False, "idempotentHint": False}
+        annotations={"destructiveHint": True, "idempotentHint": False}
     )
     def vault_capture(
         action: str,
@@ -334,16 +363,20 @@ def register_write_tools(mcp, adapter: StorageAdapter) -> None:
         source_type: str = "conversation",
         original: str | None = None,
         tags: list[str] | None = None,
+        path: str = "",
     ) -> dict:
-        """Capture a refined insight into the vault.
+        """Capture a refined insight into the vault, or delete an existing capture.
 
         Actions:
           save: Save a new capture.
             params: title (str, ≤50 chars), insight (str, 1–3 sentences),
                     source_type (str, default "conversation" — also "article"
                     or "flash"), original (str | None), tags (list[str] | None)
+          delete: Permanently delete a capture file.
+            params: path (str, required — must be in captures/)
 
         WORKFLOW — Claude MUST follow these steps before calling this tool:
+        For save:
         1. REFINE: Distill the user's thought into a core insight (1–3 plain-text
            sentences). Generate a clean, descriptive plain-text title (≤50 chars).
         2. CONFIRM: Present the refinement to the user and wait for approval.
@@ -352,14 +385,23 @@ def register_write_tools(mcp, adapter: StorageAdapter) -> None:
            user explicitly confirms.
         3. STORE: Call this tool with action="save" and the confirmed title,
            insight, and metadata.
+
+        For delete:
+        1. IDENTIFY: User specifies which capture to delete.
+        2. CONFIRM: Show the capture's title, preview, and path to the user.
+           Deletion is PERMANENT — ask "确认删除？" and wait for explicit approval.
+           Do NOT call this tool until the user confirms.
+        3. DELETE: Call this tool with action="delete" and path.
         """
         if action == "save":
             return _handle_capture_save(
                 adapter, tags_yaml, existing_tags, VALID_SOURCE_TYPES,
                 title, insight, source_type, original, tags,
             )
+        elif action == "delete":
+            return _handle_capture_delete(adapter, path)
         else:
-            return {"status": "error", "message": f"Unknown action '{action}'. Valid: save"}
+            return {"status": "error", "message": f"Unknown action '{action}'. Valid: save, delete"}
 
     @mcp.tool(
         annotations={"destructiveHint": False, "idempotentHint": False}

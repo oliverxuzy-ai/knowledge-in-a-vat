@@ -44,6 +44,19 @@ class LocalStorageAdapter(StorageAdapter):
         except Exception as e:
             raise RuntimeError(f"Error writing {path}: {e}") from e
 
+    def delete_file(self, path: str) -> dict:
+        try:
+            full = self._resolve_safe(path)
+            full.unlink()
+            logger.info("Deleted file: %s", path)
+            return {"path": path, "status": "deleted"}
+        except FileNotFoundError:
+            raise FileNotFoundError(f"File not found: {path}")
+        except ValueError:
+            raise
+        except Exception as e:
+            raise RuntimeError(f"Error deleting {path}: {e}") from e
+
     def list_files(self, directory: str = "") -> list[str]:
         try:
             base = self._resolve_safe(directory) if directory else self.vault_path

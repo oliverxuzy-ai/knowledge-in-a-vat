@@ -23,6 +23,12 @@ class MemoryAdapter(StorageAdapter):
         self.files[path] = content
         return {"path": path, "status": "written"}
 
+    def delete_file(self, path: str) -> dict:
+        if path not in self.files:
+            raise FileNotFoundError(f"File not found: {path}")
+        del self.files[path]
+        return {"path": path, "status": "deleted"}
+
     def list_files(self, directory: str = "") -> list[str]:
         return sorted(
             p for p in self.files if p.endswith(".md") and p.startswith(directory)

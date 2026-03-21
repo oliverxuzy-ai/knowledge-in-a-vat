@@ -36,6 +36,7 @@ Issues = "https://github.com/oliverxuzy-ai/obsidian-in-a-vat/issues"
 
 [project.scripts]
 vault-mcp = "vault_mcp.server:main"
+obsidian-in-a-vat-mcp = "vault_mcp.server:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/vault_mcp"]

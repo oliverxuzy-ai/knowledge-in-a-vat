@@ -7,7 +7,7 @@ WORKDIR /build
 RUN pip install --no-cache-dir hatchling
 
 # Copy only files needed for dependency resolution
-COPY pyproject.toml .
+COPY pyproject.toml README.md ./
 COPY src/ src/
 
 # Install package and dependencies into /install prefix

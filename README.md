@@ -12,11 +12,46 @@ Personal knowledge vault MCP server for Claude Desktop. Capture thoughts, search
 
 ---
 
-### Quick Start (Docker — Recommended)
+### Quick Start (uvx — Recommended)
 
-**Step 1.** Make sure [Docker Desktop](https://www.docker.com/products/docker-desktop/) is running.
+The lightest way to run vault-mcp. No Docker, no manual venv — just [uv](https://docs.astral.sh/uv/getting-started/installation/) and one config change.
+
+**Step 1.** Install uv (if you don't have it):
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
 **Step 2.** Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "vault": {
+      "command": "uvx",
+      "args": ["obsidian-in-a-vat-mcp"],
+      "env": {
+        "VAULT_LOCAL_PATH": "/Users/yourname/my-vault"
+      }
+    }
+  }
+}
+```
+
+Replace `/Users/yourname/my-vault` with the absolute path to your local vault directory.
+
+**Step 3.** Fully quit and reopen Claude Desktop. The `vault` tools will appear automatically.
+
+> **Don't have a vault yet?** Copy the included template:
+> ```bash
+> cp -r example_vault /Users/yourname/my-vault
+> ```
+
+---
+
+### Alternative Setup (Docker)
+
+If you prefer Docker:
 
 ```json
 {
@@ -33,31 +68,17 @@ Personal knowledge vault MCP server for Claude Desktop. Capture thoughts, search
 }
 ```
 
-Replace `/Users/yourname/my-vault` with the absolute path to your local vault directory.
+Requires [Docker Desktop](https://www.docker.com/products/docker-desktop/) running in the background.
 
-**Step 3.** Fully quit and reopen Claude Desktop. The `vault` tools will appear automatically.
-
-> **Don't have a vault yet?** Copy the included template:
-> ```bash
-> cp -r example_vault /Users/yourname/my-vault
-> ```
-
-#### Updating to the Latest Version
-
-When a new version is released, pull the latest image before restarting Claude Desktop:
-
-```bash
-docker pull ghcr.io/oliverxuzy-ai/obsidian-in-a-vat:latest
-```
+Update to latest: `docker pull ghcr.io/oliverxuzy-ai/obsidian-in-a-vat:latest`
 
 ---
 
-### Alternative Setup (Python / uv)
+### Alternative Setup (Python / uv manual)
 
-If you prefer not to use Docker:
+For development or if you want to pin a local checkout:
 
 ```bash
-# Install
 uv venv && source .venv/bin/activate
 uv pip install -e .
 ```
@@ -139,11 +160,46 @@ mcp dev src/vault_mcp/server.py
 
 ---
 
-### 快速开始（Docker — 推荐）
+### 快速开始（uvx — 推荐）
 
-**第一步.** 确保 [Docker Desktop](https://www.docker.com/products/docker-desktop/) 正在运行。
+最轻量的运行方式。不需要 Docker，不需要手动创建虚拟环境 — 只需安装 [uv](https://docs.astral.sh/uv/getting-started/installation/) 即可。
+
+**第一步.** 安装 uv（如果还没有）：
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
 **第二步.** 添加到 Claude Desktop 配置文件（`~/Library/Application Support/Claude/claude_desktop_config.json`）：
+
+```json
+{
+  "mcpServers": {
+    "vault": {
+      "command": "uvx",
+      "args": ["obsidian-in-a-vat-mcp"],
+      "env": {
+        "VAULT_LOCAL_PATH": "/Users/yourname/my-vault"
+      }
+    }
+  }
+}
+```
+
+将 `/Users/yourname/my-vault` 替换为你本地 vault 目录的绝对路径。
+
+**第三步.** 完全退出并重新打开 Claude Desktop，`vault` 工具会自动出现。
+
+> **还没有 vault？** 复制内置模板：
+> ```bash
+> cp -r example_vault /Users/yourname/my-vault
+> ```
+
+---
+
+### 备选安装方式（Docker）
+
+如果你更喜欢用 Docker：
 
 ```json
 {
@@ -160,31 +216,17 @@ mcp dev src/vault_mcp/server.py
 }
 ```
 
-将 `/Users/yourname/my-vault` 替换为你本地 vault 目录的绝对路径。
+需要 [Docker Desktop](https://www.docker.com/products/docker-desktop/) 在后台运行。
 
-**第三步.** 完全退出并重新打开 Claude Desktop，`vault` 工具会自动出现。
-
-> **还没有 vault？** 复制内置模板：
-> ```bash
-> cp -r example_vault /Users/yourname/my-vault
-> ```
-
-#### 更新到最新版本
-
-当有新版本发布时，在重启 Claude Desktop 前先拉取最新镜像：
-
-```bash
-docker pull ghcr.io/oliverxuzy-ai/obsidian-in-a-vat:latest
-```
+更新到最新版：`docker pull ghcr.io/oliverxuzy-ai/obsidian-in-a-vat:latest`
 
 ---
 
-### 备选安装方式（Python / uv）
+### 备选安装方式（Python / uv 手动）
 
-如果不想使用 Docker：
+适用于开发或本地调试：
 
 ```bash
-# 安装
 uv venv && source .venv/bin/activate
 uv pip install -e .
 ```

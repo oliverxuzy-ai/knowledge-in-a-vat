@@ -2,7 +2,7 @@
 
 [English](#english) | [中文](#中文)
 
-### Demo
+A personal knowledge vault MCP server for Claude Desktop — capture, search, promote, and connect your ideas, all through natural conversation.
 
 https://github.com/user-attachments/assets/0ef205a4-0ffc-4a24-a92a-b4acf66377fe
 

@@ -4,9 +4,7 @@
 
 ### Demo
 
-<video src="assets/demo.mp4" controls width="100%">
-  Your browser does not support the video tag.
-</video>
+https://github.com/user-attachments/assets/cacd9997-386f-47cf-8a59-d4fbbf707683
 
 ---
 

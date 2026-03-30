@@ -77,23 +77,21 @@ Update to latest: `docker pull ghcr.io/oliverxuzy-ai/obsidian-in-a-vat:latest`
 
 ---
 
-### Alternative Setup (Python / uv manual)
+### Local Development
 
-For development or if you want to pin a local checkout:
-
-```bash
-uv venv && source .venv/bin/activate
-uv pip install -e .
-```
-
-Claude Desktop config:
+To run from a local checkout (changes take effect after restarting Claude Desktop):
 
 ```json
 {
   "mcpServers": {
     "vault": {
-      "command": "/absolute/path/to/.venv/bin/python",
-      "args": ["-m", "vault_mcp"],
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "/absolute/path/to/obsidian-in-a-vat",
+        "vault-mcp"
+      ],
       "env": {
         "VAULT_LOCAL_PATH": "/Users/yourname/my-vault"
       }
@@ -102,7 +100,7 @@ Claude Desktop config:
 }
 ```
 
-> Use the absolute path to the venv's python — Claude Desktop does not inherit your shell PATH.
+> Switch back to the published version by changing `command` to `"uvx"` and `args` to `["obsidian-in-a-vat-mcp"]`.
 
 ---
 
@@ -225,23 +223,21 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ---
 
-### 备选安装方式（Python / uv 手动）
+### 本地开发
 
-适用于开发或本地调试：
-
-```bash
-uv venv && source .venv/bin/activate
-uv pip install -e .
-```
-
-Claude Desktop 配置：
+从本地代码运行（修改代码后重启 Claude Desktop 即可生效）：
 
 ```json
 {
   "mcpServers": {
     "vault": {
-      "command": "/绝对路径/.venv/bin/python",
-      "args": ["-m", "vault_mcp"],
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "/绝对路径/obsidian-in-a-vat",
+        "vault-mcp"
+      ],
       "env": {
         "VAULT_LOCAL_PATH": "/Users/yourname/my-vault"
       }
@@ -250,7 +246,7 @@ Claude Desktop 配置：
 }
 ```
 
-> 必须使用 venv 内 python 的绝对路径 — Claude Desktop 不继承你的 shell PATH。
+> 切回已发布版本：将 `command` 改为 `"uvx"`，`args` 改为 `["obsidian-in-a-vat-mcp"]`。
 
 ---
 

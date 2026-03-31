@@ -547,7 +547,7 @@ wheels = [
 
 [[package]]
 name = "obsidian-in-a-vat-mcp"
-version = "0.3.5"
+version = "0.3.7"
 source = { editable = "." }
 dependencies = [
     { name = "mcp", extra = ["cli"] },

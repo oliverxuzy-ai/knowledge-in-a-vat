@@ -21,7 +21,7 @@ def compute_clusters(graph: VaultGraph) -> ClusterData:
         )
 
     undirected = graph.g.to_undirected()
-    partition = community_louvain.best_partition(undirected)
+    partition = community_louvain.best_partition(undirected, random_state=42)
 
     # Group by cluster id
     clusters_map: dict[int, list[str]] = {}

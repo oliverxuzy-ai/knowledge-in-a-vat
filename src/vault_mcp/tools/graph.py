@@ -28,8 +28,9 @@ def _generate_slug(*candidates: str) -> str:
     return "topic"
 
 
-def register_graph_tools(mcp, adapter: StorageAdapter) -> None:
-    vault_graph = VaultGraph(adapter)
+def register_graph_tools(mcp, adapter: StorageAdapter, vault_graph: VaultGraph | None = None) -> None:
+    if vault_graph is None:
+        vault_graph = VaultGraph(adapter)
     _clusters_cache: dict[str, ClusterData | None] = {"data": None}
 
     # ------------------------------------------------------------------

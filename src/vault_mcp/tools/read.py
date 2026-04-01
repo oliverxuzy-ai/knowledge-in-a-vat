@@ -83,7 +83,11 @@ def _handle_list_captures(adapter: StorageAdapter, status, limit, include_conten
 
     # Sort by filename descending (filenames are timestamped)
     captures.sort(key=lambda c: c["path"], reverse=True)
-    return captures[:limit]
+    return {
+        "total": len(captures),
+        "returned": min(limit, len(captures)),
+        "captures": captures[:limit],
+    }
 
 
 def register_read_tools(mcp, adapter: StorageAdapter) -> None:
